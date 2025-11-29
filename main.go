@@ -1,25 +1,28 @@
 package main
 
 import (
-  "fmt"
+	pb "demo/proto"
+	"demo/server"
+	"fmt"
+	"google.golang.org/grpc"
+	"log"
+	"net"
 )
 
-//TIP To run your code, right-click the code and select <b>Run</b>. Alternatively, click
-// the <icon src="AllIcons.Actions.Execute"/> icon in the gutter and select the <b>Run</b> menu item from here.
-
 func main() {
-  //TIP Press <shortcut actionId="ShowIntentionActions"/> when your caret is at the underlined or highlighted text
-  // to see how GoLand suggests fixing it.
-  s := "gopher"
-  fmt.Println("Hello and welcome, %s!", s)
+	// определяем порт для сервера
+	listen, err := net.Listen("tcp", ":3200")
+	if err != nil {
+		log.Fatal(err)
+	}
+	// создаём gRPC-сервер без зарегистрированной службы
+	s := grpc.NewServer()
+	// регистрируем сервис
+	pb.RegisterUsersServer(s, &server.UsersServer{})
 
-  for i := 1; i <= 5; i++ {
-	//TIP You can try debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-	// for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>. To start your debugging session, 
-	// right-click your code in the editor and select the <b>Debug</b> option. 
-	fmt.Println("i =", 100/i)
-  }
+	fmt.Println("Сервер gRPC начал работу")
+	// получаем запрос gRPC
+	if err := s.Serve(listen); err != nil {
+		log.Fatal(err)
+	}
 }
-
-//TIP See GoLand help at <a href="https://www.jetbrains.com/help/go/">jetbrains.com/help/go/</a>.
-// Also, you can try interactive lessons for GoLand by selecting 'Help | Learn IDE Features' from the main menu.
