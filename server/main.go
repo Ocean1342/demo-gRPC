@@ -24,4 +24,5 @@ func main() {
 	if err := s.Serve(listen); err != nil {
 		log.Fatal(err)
 	}
+	//TODO: gracefull shutdown gRPC сервер
 }
